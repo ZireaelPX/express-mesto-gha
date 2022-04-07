@@ -48,7 +48,7 @@ module.exports.updateUserInfo = (req, res) => {
   User.findByIdAndUpdate(
     owner,
     { name, about },
-    { new: true },
+    { new: true, runValidators: true },
   )
     .then((user) => res.status(200).send(user))
     .catch((err) => {
@@ -69,7 +69,7 @@ module.exports.updateUserAvatar = (req, res) => {
   User.findByIdAndUpdate(
     owner,
     { avatar },
-    { new: true },
+    { new: true, runValidators: true },
   )
     .then((user) => res.status(200).send(user))
     .catch((err) => {
