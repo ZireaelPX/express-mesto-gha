@@ -1,24 +1,24 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
     minLength: 2,
     maxLength: 30,
-    required: true
+    required: true,
   },
   about: {
     type: String,
     minLength: 2,
     maxLength: 30,
-    required: true
+    required: true,
   },
   avatar: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
 }, {
-  versionKey: false // Для отключения поля _v
+  versionKey: false, // Для отключения поля _v
 });
 
 module.exports = mongoose.model('user', userSchema);
