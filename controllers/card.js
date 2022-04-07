@@ -31,15 +31,23 @@ module.exports.deleteCard = (req, res) => {
   const { cardId } = req.params;
 
   Card.findByIdAndRemove(cardId)
+    .orFail(() => {
+      const error = new Error();
+      error.statusCode = 404;
+      throw error;
+    })
     .then((card) => res.status(200).send(card))
     .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Переданы некорректные данные...' });
-      } else if (err.message === 'NotFound') {
-        res.status(404).send({ message: 'Карточка не обнаружена' });
-      } else {
-        res.status(500).send({ message: 'На стороне сервере произошла ошибка' });
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: 'Ошибка валидности данных' });
       }
+      if (err.name === 'CastError') {
+        return res.status(400).send({ message: 'Передан некорректный _id' });
+      }
+      if (err.statusCode === 404) {
+        return res.status(404).send({ message: 'ID карточки не найден' });
+      }
+      return res.status(500).send({ message: 'На стороне сервере произошла ошибка' });
     });
 };
 
@@ -68,7 +76,7 @@ module.exports.likeCard = (req, res) => {
       if (err.statusCode === 404) {
         return res.status(404).send({ message: 'ID карточки не найден' });
       }
-      return res.status(500).send({ message: `Произошла ошибка: ${err.name} ${err.message}` });
+      return res.status(500).send({ message: 'На стороне сервере произошла ошибка' });
     });
 };
 
