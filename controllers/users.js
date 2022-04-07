@@ -33,7 +33,7 @@ module.exports.createUser = (req, res) => {
   User.create({ name, about, avatar })
     .then((user) => res.status(200).send(user))
     .catch((err) => {
-      if (err.name === 'CastError' && err.name === 'ValidationError') {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные...' });
       } else {
         res.status(500).send({ message: 'На стороне сервере произошла ошибка' });
@@ -52,7 +52,7 @@ module.exports.updateUserInfo = (req, res) => {
   )
     .then((user) => res.status(200).send(user))
     .catch((err) => {
-      if (err.name === 'CastError' && err.name === 'ValidationError') {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные...' });
       } else if (err.message === 'NotFound') {
         res.status(404).send({ message: 'Пользователь не обнаружен' });
@@ -73,7 +73,7 @@ module.exports.updateUserAvatar = (req, res) => {
   )
     .then((user) => res.status(200).send(user))
     .catch((err) => {
-      if (err.name === 'CastError' && err.name === 'ValidationError') {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные...' });
       } else if (err.message === 'NotFound') {
         res.status(404).send({ message: 'Пользователь не обнаружен' });
