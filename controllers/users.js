@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 const User = require('../models/user');
 
 module.exports.getUsers = (req, res) => {
@@ -16,28 +16,26 @@ module.exports.getUsers = (req, res) => {
 module.exports.getUserById = (req, res) => {
   const { userId } = req.params;
 
-  if (!mongoose.Types.ObjectId.isValid(userId)) {
-    res.status('404').send({ message: 'Пользователь не обнаружен' });
-    return;
-  }
+  // if (!mongoose.Types.ObjectId.isValid(userId)) {
+  //   res.status('404').send({ message: 'Пользователь не обнаружен' });
+  //   return;
+  // }
 
   User.findById(userId)
-    // .orFail(new Error('NotFound'))
-    .then((user) => {
-      if (!user) {
-        res.status('404').send({ message: 'Пользователь не обнаружен' });
-        return;
-      }
-      res.status(200).send(user);
+    .orFail(() => {
+      const error = new Error();
+      error.statusCode = 404;
+      throw error;
     })
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Переданы некорректные данные...' });
-      } else if (err.message === 'NotFound') {
-        res.status(404).send({ message: 'Пользователь не обнаружен' });
-      } else {
-        res.status(500).send({ message: 'На стороне сервере произошла ошибка' });
+        return res.status(400).send({ message: 'Передан некорректный _id' });
       }
+      if (err.statusCode === 404) {
+        return res.status(404).send({ message: 'Пользователь по указанному _id не найден' });
+      }
+      return res.status(500).send({ message: 'На стороне сервере произошла ошибка' });
     });
 };
 
