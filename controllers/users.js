@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 const User = require('../models/user');
 
 module.exports.getUsers = (req, res) => {
@@ -16,23 +16,21 @@ module.exports.getUsers = (req, res) => {
 module.exports.getUserById = (req, res) => {
   const { userId } = req.params;
 
-  if(!mongoose.Types.ObjectId.isValid(userId)){
-    res.status("404").send({ message: 'Пользователь не обнаружен' });
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    res.status('404').send({ message: 'Пользователь не обнаружен' });
     return;
   }
 
   User.findById(userId)
     // .orFail(new Error('NotFound'))
     .then((user) => {
-      console.log(user)
-      if(!user){
-        res.status("404").send({ message: 'Пользователь не обнаружен' })
+      if (!user) {
+        res.status('404').send({ message: 'Пользователь не обнаружен' });
         return;
       }
-      res.status(200).send(user)
+      res.status(200).send(user);
     })
     .catch((err) => {
-      console.log(err.message)
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные...' });
       } else if (err.message === 'NotFound') {
