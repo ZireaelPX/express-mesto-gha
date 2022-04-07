@@ -1,7 +1,7 @@
-const Card = require('../models/card');
+const Cards = require('../models/card');
 
 module.exports.getCards = (req, res) => {
-  Card.find({})
+  Cards.find({})
     .then((cards) => res.status(200).send(cards))
     .catch((err) => {
       if (err.message === 'NotFound') {
@@ -16,7 +16,7 @@ module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
   const owner = req.user._id;
 
-  Card.create({ name, link, owner })
+  Cards.create({ name, link, owner })
     .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
@@ -30,7 +30,7 @@ module.exports.createCard = (req, res) => {
 module.exports.deleteCard = (req, res) => {
   const { cardId } = req.params;
 
-  Card.findByIdAndRemove(cardId)
+  Cards.findByIdAndRemove(cardId)
     .orFail(() => {
       const error = new Error();
       error.statusCode = 404;
@@ -55,7 +55,7 @@ module.exports.likeCard = (req, res) => {
   const owner = req.user._id;
   const { cardId } = req.params;
 
-  Card.findByIdAndUpdate(
+  Cards.findByIdAndUpdate(
     cardId,
     { $addToSet: { likes: owner } },
     { new: true, runValidators: true },
@@ -84,7 +84,7 @@ module.exports.dislikeCard = (req, res) => {
   const owner = req.user._id;
   const { cardId } = req.params;
 
-  Card.findByIdAndUpdate(
+  Cards.findByIdAndUpdate(
     cardId,
     { $pull: { likes: owner } },
     { new: true, runValidators: true },
