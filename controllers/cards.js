@@ -1,57 +1,76 @@
 const Cards = require('../models/card');
+const NotFoundError = require('../errors/not-found-err');
+const BadRequestError = require('../errors/not-found-err');
+const ForbiddenError = require('../errors/forbidden-err');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Cards.find({})
     .then((cards) => res.status(200).send(cards))
     .catch((err) => {
       if (err.message === 'NotFound') {
-        res.status(404).send({ message: 'Карточки не обнаружены' });
+        throw new NotFoundError('Публикации не обнаружены');
       } else {
         res.status(500).send({ message: 'На стороне сервере произошла ошибка' });
       }
-    });
+    })
+    .catch(next);
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
 
-  Cards.create({ name, link, owner })
+  return Cards.create({ name, link, owner })
     .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные...' });
-      } else {
-        res.status(500).send({ message: 'На стороне сервере произошла ошибка' });
+        throw new BadRequestError('Переданы некорректные данные...');
       }
-    });
+    })
+    .catch(next);
 };
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
 
-  Cards.findByIdAndRemove(cardId)
+  return Cards.findById(cardId)
     .orFail(() => {
       const error = new Error();
       error.statusCode = 404;
       throw error;
     })
-    .then((card) => res.status(200).send(card))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: 'Ошибка валидности данных' });
+    .then((card) => {
+      if (card.owner.toString() === req.user._id) {
+        Cards.findByIdAndRemove(cardId).then(() => res.status(200).send(card));
+      } else {
+        throw new ForbiddenError('Доступ запрещён');
       }
-      if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Передан некорректный _id' });
-      }
-      if (err.statusCode === 404) {
-        return res.status(404).send({ message: 'ID карточки не найден' });
-      }
-      return res.status(500).send({ message: 'На стороне сервере произошла ошибка' });
-    });
+    })
+    .catch(next);
+  // const { cardId } = req.params;
+  //
+  // Cards.findByIdAndRemove(cardId)
+  //   .orFail(() => {
+  //     const error = new Error();
+  //     error.statusCode = 404;
+  //     throw error;
+  //   })
+  //   .then((card) => res.status(200).send(card))
+  //   .catch((err) => {
+  //     if (err.name === 'ValidationError') {
+  //       return res.status(400).send({ message: 'Ошибка валидности данных' });
+  //     }
+  //     if (err.name === 'CastError') {
+  //       return res.status(400).send({ message: 'Передан некорректный _id' });
+  //     }
+  //     if (err.statusCode === 404) {
+  //       return res.status(404).send({ message: 'ID карточки не найден' });
+  //     }
+  //     return res.status(500).send({ message: 'На стороне сервере произошла ошибка' });
+  //   });
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   const owner = req.user._id;
   const { cardId } = req.params;
 
@@ -61,26 +80,21 @@ module.exports.likeCard = (req, res) => {
     { new: true, runValidators: true },
   )
     .orFail(() => {
-      const error = new Error();
-      error.statusCode = 404;
-      throw error;
+      throw new NotFoundError('Публикация по заданному _id не найдена');
     })
     .then((card) => res.status(200).send(card))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: 'Ошибка валидности данных' });
-      }
       if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Передан некорректный _id' });
+        next(new BadRequestError('Переданы некорректные данные...'));
       }
-      if (err.statusCode === 404) {
-        return res.status(404).send({ message: 'ID карточки не найден' });
+      if (err.message === 'NotFound') {
+        next(new NotFoundError('Публикация по заданному _id не найдена'));
       }
-      return res.status(500).send({ message: 'На стороне сервере произошла ошибка' });
+      next(err);
     });
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   const owner = req.user._id;
   const { cardId } = req.params;
 
@@ -90,21 +104,16 @@ module.exports.dislikeCard = (req, res) => {
     { new: true, runValidators: true },
   )
     .orFail(() => {
-      const error = new Error();
-      error.statusCode = 404;
-      throw error;
+      throw new NotFoundError('Публикация по заданному _id не найдена');
     })
     .then((card) => res.status(200).send(card))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: 'Ошибка валидности данных' });
-      }
       if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Передан некорректный _id' });
+        next(new BadRequestError('Переданы некорректные данные...'));
       }
-      if (err.statusCode === 404) {
-        return res.status(404).send({ message: 'ID карточки не найден' });
+      if (err.message === 'NotFound') {
+        next(new NotFoundError('Публикация по заданному _id не найдена'));
       }
-      return res.status(500).send({ message: `Произошла ошибка: ${err.name} ${err.message}` });
+      next(err);
     });
 };
