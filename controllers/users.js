@@ -80,9 +80,11 @@ module.exports.createUser = (req, res, next) => {
   } = req.body;
 
   bcrypt.hash(req.body.password, 10)
-    .then((hash) => User.create({
-      name, about, avatar, email, password: hash,
-    }))
+    .then((hash) => {
+      User.create({
+        name, about, avatar, email, password: hash,
+      });
+    })
     .then((user) => res.status(201).send(user))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
