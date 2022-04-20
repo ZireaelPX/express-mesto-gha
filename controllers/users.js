@@ -119,9 +119,9 @@ module.exports.updateUserInfo = (req, res, next) => {
     { name, about },
     { new: true, runValidators: true },
   )
-    .orFail(() => {
-      throw new NotFoundError('Пользователь с указанным _id не найден');
-    })
+    // .orFail(() => {
+    //   throw new NotFoundError('Пользователь с указанным _id не найден');
+    // })
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
