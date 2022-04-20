@@ -31,7 +31,7 @@ module.exports.validateUpdateUserInfo = celebrate({
   // Ошибка валидации не работает у элемента about, а у name работает.
 });
 
-module.exports.validateUpdateAvatar = celebrate({
+module.exports.validateUpdateUserAvatar = celebrate({
   body: Joi.object().keys({
     avatar: Joi.string().required().pattern(/^https?:\/\/(www.)?[a-zA-Z0-9-.]+\.[a-zA-Z]{2,}([a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]+)*#*$/),
   }),
