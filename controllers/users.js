@@ -117,7 +117,7 @@ module.exports.updateUserInfo = (req, res, next) => {
     });
 };
 
-module.exports.updateUserAvatar = (req, res) => {
+module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
   const owner = req.user._id;
 
@@ -129,9 +129,11 @@ module.exports.updateUserAvatar = (req, res) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные');
+        next(new BadRequestError('Переданы некорректные данные'));
+        // throw new BadRequestError('Переданы некорректные данные');
       } else if (err.message === 'NotFound') {
-        throw new NotFoundError('Пользователь не обнаружен');
+        next(new NotFoundError('Пользователь не обнаружен'));
+        // throw new NotFoundError('Пользователь не обнаружен');
       }
     });
 };
@@ -145,7 +147,7 @@ module.exports.login = (req, res, next) => {
       res.send({ token });
     })
     .catch(() => {
-      throw new UnauthorizedError('Неправильная почта или пароль');
-    })
-    .catch(next);
+      // throw new UnauthorizedError('Неправильная почта или пароль');
+      next(new UnauthorizedError('Неправильная почта или пароль'));
+    });
 };
