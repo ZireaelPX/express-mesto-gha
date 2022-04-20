@@ -13,6 +13,7 @@ const { validateUserId, validationUpdateAvatar } = require('../middlewares/valid
 
 router.get('/', getUsers);
 router.get('/me', getAuthorizedUser);
+router.get('/:userId', validateUserId, getUserById);
 router.patch('/me', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
@@ -20,6 +21,5 @@ router.patch('/me', celebrate({
   }),
 }), updateUserInfo);
 router.patch('/me/avatar', validationUpdateAvatar, updateUserAvatar);
-router.get('/:userId', validateUserId, getUserById);
 
 module.exports = router;
