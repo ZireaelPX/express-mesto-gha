@@ -42,10 +42,9 @@ module.exports.deleteCard = (req, res, next) => {
     .then((card) => {
       if (card.owner.toString() === userId) {
         Cards.findByIdAndRemove(cardId).then(() => res.status(200).send(card));
-      } else {
-        next(new ForbiddenError('Доступ запрещён'));
-        // throw new ForbiddenError('Доступ запрещён');
       }
+      // throw new ForbiddenError('Доступ запрещён');
+      return next(new ForbiddenError('Доступ запрещён'));
     })
     .catch((err) => {
       if (err.name === 'CastError') {
