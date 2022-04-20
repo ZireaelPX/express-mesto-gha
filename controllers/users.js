@@ -96,8 +96,7 @@ module.exports.createUser = (req, res, next) => {
       } else if (err.code === 11000) {
         next(new ConflictError('Пользователь с таким email уже существует'));
       }
-    })
-    .catch(next);
+    });
 
   // User.create({
   //   name, about, avatar, email,

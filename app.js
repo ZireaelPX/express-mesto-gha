@@ -19,6 +19,7 @@ app.post('/signup', validateCreateUser, createUser);
 
 app.use(auth);
 app.use(routes);
+app.use(errors());
 app.use(errors);
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {
