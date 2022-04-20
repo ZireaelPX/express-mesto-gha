@@ -85,12 +85,16 @@ module.exports.createUser = (req, res, next) => {
         name, about, avatar, email, password: hash,
       });
     })
-    .then((user) => res.status(201).send(user))
+    .then((user) => {
+      res.status(200).send({
+        id: user._id, email: user.email, name: user.name, about: user.about, avatar: user.avatar,
+      });
+    })
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные');
+        next(new BadRequestError('Переданы некорректные данные'));
       } else if (err.code === 11000) {
-        throw new ConflictError('Пользователь с таким email уже существует');
+        next(new ConflictError('Пользователь с таким email уже существует'));
       }
     })
     .catch(next);
