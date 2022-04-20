@@ -133,12 +133,13 @@ module.exports.updateUserInfo = (req, res, next) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные');
+        next(new BadRequestError('Ошибка валидации.'));
       } else if (err.message === 'NotFound') {
-        throw new NotFoundError('Пользователь не обнаружен');
+        next(new NotFoundError('Пользователь не обнаружен'));
+      } else {
+        next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 module.exports.updateUserAvatar = (req, res) => {
