@@ -7,14 +7,14 @@ const BadRequestError = require('../errors/not-found-err');
 const ConflictError = require('../errors/conflict-err');
 const UnauthorizedError = require('../errors/unauthorized-err');
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.status(200).send(users))
     .catch((err) => {
       if (err.message === 'NotFound') {
-        throw new NotFoundError('Пользователи не обнаружены');
+        next(new NotFoundError('Пользователи не обнаружены'));
       } else {
-        res.status(500).send({ message: 'На стороне сервере произошла ошибка' });
+        next(err);
       }
     });
 };
@@ -36,26 +36,6 @@ module.exports.getUserById = (req, res, next) => {
       }
       next(err);
     });
-
-  // if (!mongoose.Types.ObjectId.isValid(userId)) {
-  //   res.status('404').send({ message: 'Пользователь не обнаружен' });
-  //   return;
-  // }
-
-  // User.findById(userId)
-  //   .orFail(() => {
-  //     throw new NotFoundError('Пользователь не обнаружен');
-  //   })
-  //   .then((user) => res.send(user))
-  //   .catch((err) => {
-  //     if (err.name === 'CastError') {
-  //       return res.status(400).send({ message: 'Передан некорректный _id' });
-  //     }
-  //     if (err.statusCode === 404) {
-  //       throw new NotFoundError('Пользователь по указанному _id не найден');
-  //     }
-  //     return res.status(500).send({ message: 'На стороне сервере произошла ошибка' });
-  //   });
 };
 
 module.exports.getAuthorizedUser = (req, res, next) => {
@@ -66,12 +46,15 @@ module.exports.getAuthorizedUser = (req, res, next) => {
     .then((user) => res.status(200).send({ user }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Переданы некорректные данные');
+        // throw new BadRequestError('Переданы некорректные данные');
+        next(new BadRequestError('Переданы некорректные данные'));
       } else if (err.message === 'NotFound') {
-        throw new NotFoundError('Пользователь по указанному _id не найден');
+        // throw new NotFoundError('Пользователь по указанному _id не найден');
+        next(new NotFoundError('Пользователь по указанному _id не найден'));
+      } else {
+        next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 module.exports.createUser = (req, res, next) => {
