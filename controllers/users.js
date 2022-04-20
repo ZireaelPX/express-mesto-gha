@@ -76,26 +76,18 @@ module.exports.getAuthorizedUser = (req, res, next) => {
 
 module.exports.createUser = (req, res, next) => {
   const {
-    name, about, avatar, email,
+    name, about, avatar, email, password,
   } = req.body;
-
-  bcrypt.hash(req.body.password, 10)
-    .then((hash) => {
-      User.create({
-        name, about, avatar, email, password: hash,
-      });
-    })
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
+    }))
     .then((user) => {
       res.status(200).send({
         id: user._id, email: user.email, name: user.name, about: user.about, avatar: user.avatar,
       });
     })
     .catch((err) => {
-      // if (err.name === 'CastError' || err.name === 'ValidationError') {
-      //   throw new BadRequestError('Переданы некорректные данные');
-      // } else if (err.code === 11000) {
-      //   throw new ConflictError('Пользователь с таким email уже существует');
-      // }
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Ошибка валидации.'));
       } else if (err.code === 11000) {
