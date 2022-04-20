@@ -1,7 +1,15 @@
-const {celebrate, Joi} = require('celebrate');
+const { celebrate, Joi } = require('celebrate');
 const isUrl = require('validator/lib/isURL');
 const BadRequestError = require('../errors/bad-request-err');
 
+const validationUserUrl = (url) => {
+  const validate = isUrl(url);
+  if (!validate) {
+    throw new BadRequestError('Некорректный адрес URL');
+  }
+  return url;
+  // esLint помечает, регулярное выражение как ошибку
+};
 
 module.exports.validateUserId = celebrate({
   params: Joi.object().keys({
@@ -20,7 +28,7 @@ module.exports.validateCreateUser = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(new RegExp(/^(http|https):\/\/[A-za-z0-9-._~:/?#\[\]@!$&'()*+,;=]{1,}$/)),
+    avatar: Joi.string().custom(validationUserUrl),
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
   }),
@@ -35,14 +43,14 @@ module.exports.validateUpdateUserInfo = celebrate({
 
 module.exports.validationUpdateAvatar = celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().pattern(new RegExp(/^(http|https):\/\/[A-za-z0-9-._~:/?#\[\]@!$&'()*+,;=]{1,}$/)),
+    avatar: Joi.string().custom(validationUserUrl),
   }),
 });
 
 module.exports.validationCreateCard = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
-    link: Joi.string().pattern(new RegExp(/^(http|https):\/\/[A-za-z0-9-._~:/?#\[\]@!$&'()*+,;=]{1,}$/)),
+    link: Joi.string().required().custom(validationUserUrl),
   }),
 });
 
