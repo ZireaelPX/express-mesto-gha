@@ -23,19 +23,12 @@ module.exports.validateCreateUser = celebrate({
   }),
 });
 
-// module.exports.validateUpdateUserInfo = celebrate({
-//   body: Joi.object().keys({
-//     name: Joi.string().min(2).max(30).required(),
-//     about: Joi.string().min(2).max(30).required(),
-//   }),
-//   // Ошибка валидации не работает у элемента about, а у name работает.
-// });
-
-module.exports.validateUpdateUser = celebrate({
+module.exports.validateUpdateUserInfo = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
     about: Joi.string().min(2).max(30).required(),
   }),
+  // Ошибка валидации не работает у элемента about, а у name работает.
 });
 
 module.exports.validateUpdateAvatar = celebrate({
