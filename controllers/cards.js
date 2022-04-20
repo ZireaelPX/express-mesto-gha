@@ -32,21 +32,26 @@ module.exports.createCard = (req, res, next) => {
 
 module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
+  const userId = req.user._id;
 
   return Cards.findById(cardId)
     .orFail(() => {
-      const error = new Error();
-      error.statusCode = 404;
-      throw error;
+      throw new NotFoundError('Публикация не обнаружена');
     })
     .then((card) => {
-      if (card.owner.toString() === req.user._id) {
+      if (card.owner.toString() === userId) {
         Cards.findByIdAndRemove(cardId).then(() => res.status(200).send(card));
       } else {
         throw new ForbiddenError('Доступ запрещён');
       }
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new BadRequestError('Переданы некорректные данные при удалении...'));
+      } else {
+        next(err);
+      }
+    });
   // const { cardId } = req.params;
   //
   // Cards.findByIdAndRemove(cardId)
