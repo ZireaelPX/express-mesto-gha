@@ -8,9 +8,8 @@ module.exports.getCards = (req, res, next) => {
     .then((cards) => res.status(200).send(cards))
     .catch((err) => {
       if (err.message === 'NotFound') {
-        throw new NotFoundError('Публикации не обнаружены');
-      } else {
-        res.status(500).send({ message: 'На стороне сервере произошла ошибка' });
+        // throw new NotFoundError('Публикации не обнаружены');
+        next(new NotFoundError('Публикации не обнаружены'));
       }
     })
     .catch(next);
@@ -24,10 +23,12 @@ module.exports.createCard = (req, res, next) => {
     .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные...');
+        next(new BadRequestError('Переданы некорректные данные...'));
+        // throw new BadRequestError('Переданы некорректные данные...');
+      } else {
+        next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 module.exports.deleteCard = (req, res, next) => {
@@ -42,7 +43,8 @@ module.exports.deleteCard = (req, res, next) => {
       if (card.owner.toString() === userId) {
         Cards.findByIdAndRemove(cardId).then(() => res.status(200).send(card));
       } else {
-        throw new ForbiddenError('Доступ запрещён');
+        next(new ForbiddenError('Доступ запрещён'));
+        // throw new ForbiddenError('Доступ запрещён');
       }
     })
     .catch((err) => {
