@@ -28,6 +28,7 @@ module.exports.validateUpdateUserInfo = celebrate({
     name: Joi.string().min(2).max(30).required(),
     about: Joi.string().min(2).max(30).required(),
   }),
+  // Ошибка валидации не работает у элемента about, а у name работает.
 });
 
 module.exports.validationUpdateAvatar = celebrate({
