@@ -1,15 +1,4 @@
 const { celebrate, Joi } = require('celebrate');
-// const isUrl = require('validator/lib/isURL');
-// const BadRequestError = require('../errors/bad-request-err');
-
-// const validationUserUrl = (url) => {
-//   const validate = isUrl(url);
-//   if (!validate) {
-//     throw new BadRequestError('Некорректный адрес URL');
-//   }
-//   return url;
-//   // esLint помечает, регулярное выражение как ошибку
-// };
 
 module.exports.validateUserId = celebrate({
   params: Joi.object().keys({
@@ -36,8 +25,8 @@ module.exports.validateCreateUser = celebrate({
 
 module.exports.validateUpdateUserInfo = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().required().min(2).max(30),
-    about: Joi.string().required().min(2).max(30),
+    name: Joi.string().min(2).max(30).required(),
+    about: Joi.string().min(2).max(30).required(),
   }),
 });
 
