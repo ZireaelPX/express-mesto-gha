@@ -1,15 +1,15 @@
 const { celebrate, Joi } = require('celebrate');
-const isUrl = require('validator/lib/isURL');
-const BadRequestError = require('../errors/bad-request-err');
+// const isUrl = require('validator/lib/isURL');
+// const BadRequestError = require('../errors/bad-request-err');
 
-const validationUserUrl = (url) => {
-  const validate = isUrl(url);
-  if (!validate) {
-    throw new BadRequestError('Некорректный адрес URL');
-  }
-  return url;
-  // esLint помечает, регулярное выражение как ошибку
-};
+// const validationUserUrl = (url) => {
+//   const validate = isUrl(url);
+//   if (!validate) {
+//     throw new BadRequestError('Некорректный адрес URL');
+//   }
+//   return url;
+//   // esLint помечает, регулярное выражение как ошибку
+// };
 
 module.exports.validateUserId = celebrate({
   params: Joi.object().keys({
@@ -50,7 +50,7 @@ module.exports.validationUpdateAvatar = celebrate({
 module.exports.validationCreateCard = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
-    link: Joi.string().required().custom(validationUserUrl),
+    link: Joi.string().required().pattern(/^https?:\/\/(www.)?[a-zA-Z0-9-.]+\.[a-zA-Z]{2,}([a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]+)*#*$/),
   }),
 });
 
