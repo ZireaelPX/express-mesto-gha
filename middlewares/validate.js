@@ -23,21 +23,28 @@ module.exports.validateCreateUser = celebrate({
   }),
 });
 
-module.exports.validateUpdateUserInfo = celebrate({
+// module.exports.validateUpdateUserInfo = celebrate({
+//   body: Joi.object().keys({
+//     name: Joi.string().min(2).max(30).required(),
+//     about: Joi.string().min(2).max(30).required(),
+//   }),
+//   // Ошибка валидации не работает у элемента about, а у name работает.
+// });
+
+module.exports.validateUpdateUser = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
     about: Joi.string().min(2).max(30).required(),
   }),
-  // Ошибка валидации не работает у элемента about, а у name работает.
 });
 
-module.exports.validationUpdateAvatar = celebrate({
+module.exports.validateUpdateAvatar = celebrate({
   body: Joi.object().keys({
     avatar: Joi.string().required().pattern(/^https?:\/\/(www.)?[a-zA-Z0-9-.]+\.[a-zA-Z]{2,}([a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]+)*#*$/),
   }),
 });
 
-module.exports.validationCreateCard = celebrate({
+module.exports.validateCreateCard = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
     link: Joi.string().required().pattern(/^https?:\/\/(www.)?[a-zA-Z0-9-.]+\.[a-zA-Z]{2,}([a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]+)*#*$/),
