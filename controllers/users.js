@@ -91,13 +91,19 @@ module.exports.createUser = (req, res, next) => {
       });
     })
     .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные');
+      // if (err.name === 'CastError' || err.name === 'ValidationError') {
+      //   throw new BadRequestError('Переданы некорректные данные');
+      // } else if (err.code === 11000) {
+      //   throw new ConflictError('Пользователь с таким email уже существует');
+      // }
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError('Ошибка валидации.'));
       } else if (err.code === 11000) {
-        throw new ConflictError('Пользователь с таким email уже существует');
+        next(new ConflictError('Пользователь с таким email уже существует.'));
+      } else {
+        next(err);
       }
-    })
-    .catch(next);
+    });
 
   // User.create({
   //   name, about, avatar, email,
