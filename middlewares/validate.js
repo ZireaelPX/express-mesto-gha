@@ -19,7 +19,7 @@ module.exports.validateUserId = celebrate({
 
 module.exports.validateLogin = celebrate({
   body: Joi.object().keys({
-    email: Joi.string().required().email(),
+    email: Joi.string().email().required(),
     password: Joi.string().required(),
   }),
 });
@@ -29,8 +29,8 @@ module.exports.validateCreateUser = celebrate({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().custom(validationUserUrl),
-    email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
   }),
 });
 
