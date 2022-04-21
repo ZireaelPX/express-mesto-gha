@@ -37,7 +37,6 @@ module.exports.getAuthorizedUser = (req, res, next) => {
     .then((user) => res.status(200).send({ user }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        // throw new BadRequestError('Переданы некорректные данные');
         next(new BadRequestError('Переданы некорректные данные'));
       }
       next(err);
@@ -76,9 +75,6 @@ module.exports.updateUserInfo = (req, res, next) => {
     { name, about },
     { new: true, runValidators: true },
   )
-    // .orFail(() => {
-    //   throw new NotFoundError('Пользователь с указанным _id не найден');
-    // })
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
@@ -101,7 +97,6 @@ module.exports.updateUserAvatar = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные'));
-        // throw new BadRequestError('Переданы некорректные данные');
       }
       next(err);
     });
@@ -116,7 +111,6 @@ module.exports.login = (req, res, next) => {
       res.send({ token });
     })
     .catch(() => {
-      // throw new UnauthorizedError('Неправильная почта или пароль');
       next(new UnauthorizedError('Неправильная почта или пароль'));
     });
 };
