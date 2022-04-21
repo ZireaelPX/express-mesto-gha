@@ -1,4 +1,5 @@
 const { celebrate, Joi } = require('celebrate');
+const { regularUrl } = require('../utils/constants');
 
 module.exports.validateUserId = celebrate({
   params: Joi.object().keys({
@@ -17,7 +18,7 @@ module.exports.validateCreateUser = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(/^https?:\/\/(www.)?[a-zA-Z0-9-.]+\.[a-zA-Z]{2,}([a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]+)*#*$/),
+    avatar: Joi.string().pattern(regularUrl),
     email: Joi.string().email().required(),
     password: Joi.string().required(),
   }),
@@ -29,18 +30,19 @@ module.exports.validateUpdateUserInfo = celebrate({
     about: Joi.string().min(2).max(30).required(),
   }),
   // Ошибка валидации не работает у элемента about, а у name работает.
+  // Странно, возможно с тестом что-то не так, он показывает ошибку
 });
 
 module.exports.validateUpdateUserAvatar = celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().required().pattern(/^https?:\/\/(www.)?[a-zA-Z0-9-.]+\.[a-zA-Z]{2,}([a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]+)*#*$/),
+    avatar: Joi.string().required().pattern(regularUrl),
   }),
 });
 
 module.exports.validateCreateCard = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
-    link: Joi.string().required().pattern(/^https?:\/\/(www.)?[a-zA-Z0-9-.]+\.[a-zA-Z]{2,}([a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]+)*#*$/),
+    link: Joi.string().required().pattern(regularUrl),
   }),
 });
 
