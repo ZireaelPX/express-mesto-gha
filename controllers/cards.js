@@ -6,12 +6,6 @@ const ForbiddenError = require('../errors/forbidden');
 module.exports.getCards = (req, res, next) => {
   Cards.find({})
     .then((cards) => res.status(200).send(cards))
-    .catch((err) => {
-      if (err.message === 'NotFound') {
-        // throw new NotFoundError('Публикации не обнаружены');
-        next(new NotFoundError('Публикации не обнаружены'));
-      }
-    })
     .catch(next);
 };
 
@@ -41,10 +35,9 @@ module.exports.deleteCard = (req, res, next) => {
     })
     .then((card) => {
       if (card.owner.toString() === userId) {
-        Cards.findByIdAndRemove(cardId).then(() => res.status(200).send(card));
-      } else {
-        next(new ForbiddenError('Доступ запрещён'));
+        return Cards.findByIdAndRemove(cardId).then(() => res.status(200).send(card));
       }
+      return next(new ForbiddenError('Доступ запрещён'));
       // throw new ForbiddenError('Доступ запрещён');
     })
     .catch((err) => {
@@ -73,9 +66,6 @@ module.exports.likeCard = (req, res, next) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректные данные...'));
       }
-      if (err.message === 'NotFound') {
-        next(new NotFoundError('Публикация по заданному _id не найдена'));
-      }
       next(err);
     });
 };
@@ -96,9 +86,6 @@ module.exports.dislikeCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректные данные...'));
-      }
-      if (err.message === 'NotFound') {
-        next(new NotFoundError('Публикация по заданному _id не найдена'));
       }
       next(err);
     });

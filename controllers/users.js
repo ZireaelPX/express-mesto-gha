@@ -10,13 +10,7 @@ const UnauthorizedError = require('../errors/unauthorized');
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.status(200).send(users))
-    .catch((err) => {
-      if (err.message === 'NotFound') {
-        next(new NotFoundError('Пользователи не обнаружены'));
-      } else {
-        next(err);
-      }
-    });
+    .catch(next);
 };
 
 module.exports.getUserById = (req, res, next) => {
@@ -30,9 +24,6 @@ module.exports.getUserById = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректные данные'));
-      }
-      if (err.message === 'NotFound') {
-        next(new NotFoundError('Пользователь по указанному _id не найден'));
       }
       next(err);
     });
@@ -48,12 +39,8 @@ module.exports.getAuthorizedUser = (req, res, next) => {
       if (err.name === 'CastError') {
         // throw new BadRequestError('Переданы некорректные данные');
         next(new BadRequestError('Переданы некорректные данные'));
-      } else if (err.message === 'NotFound') {
-        // throw new NotFoundError('Пользователь по указанному _id не найден');
-        next(new NotFoundError('Пользователь по указанному _id не найден'));
-      } else {
-        next(err);
       }
+      next(err);
     });
 };
 
@@ -75,22 +62,9 @@ module.exports.createUser = (req, res, next) => {
         next(new BadRequestError('Ошибка валидации.'));
       } else if (err.code === 11000) {
         next(new ConflictError('Пользователь с таким email уже существует.'));
-      } else {
-        next(err);
       }
+      next(err);
     });
-
-  // User.create({
-  //   name, about, avatar, email,
-  // })
-  //   .then((user) => res.status(200).send(user))
-  //   .catch((err) => {
-  //     if (err.name === 'CastError' || err.name === 'ValidationError') {
-  //       res.status(400).send({ message: 'Переданы некорректные данные...' });
-  //     } else {
-  //       res.status(500).send({ message: 'На стороне сервере произошла ошибка' });
-  //     }
-  //   });
 };
 
 module.exports.updateUserInfo = (req, res, next) => {
@@ -109,11 +83,8 @@ module.exports.updateUserInfo = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         next(new BadRequestError('Ошибка валидации.'));
-      } else if (err.message === 'NotFound') {
-        next(new NotFoundError('Пользователь не обнаружен'));
-      } else {
-        next(err);
       }
+      next(err);
     });
 };
 
@@ -131,10 +102,8 @@ module.exports.updateUserAvatar = (req, res, next) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные'));
         // throw new BadRequestError('Переданы некорректные данные');
-      } else if (err.message === 'NotFound') {
-        next(new NotFoundError('Пользователь не обнаружен'));
-        // throw new NotFoundError('Пользователь не обнаружен');
       }
+      next(err);
     });
 };
 
