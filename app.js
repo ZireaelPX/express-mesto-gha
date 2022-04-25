@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
 
-const { createUser, login } = require('./controllers/users');
-const { validateCreateUser, validateLogin } = require('./middlewares/validate');
+// const { createUser, login } = require('./controllers/users');
+// const { validateCreateUser, validateLogin } = require('./middlewares/validate');
 const auth = require('./middlewares/auth');
 const createErrors = require('./middlewares/errors');
 const routes = require('./routes/index');
@@ -14,8 +14,8 @@ const app = express();
 
 app.use(bodyParser.json());
 
-app.post('/signin', validateLogin, login);
-app.post('/signup', validateCreateUser, createUser);
+// app.post('/signin', validateLogin, login);
+// app.post('/signup', validateCreateUser, createUser);
 
 app.use(auth);
 
