@@ -65,6 +65,8 @@ module.exports.createUser = (req, res, next) => {
       next(err);
     });
 };
+// При регистрации не выдаёт ошибку, если использую уже существующий email в БД(https://qna.habr.com/q/739327).
+// Если в продакшене не будет работать, то по ссылке решение
 
 module.exports.updateUserInfo = (req, res, next) => {
   const { name, about } = req.body;
