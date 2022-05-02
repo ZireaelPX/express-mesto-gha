@@ -6,6 +6,7 @@ const { errors } = require('celebrate');
 // const { createUser, login } = require('./controllers/users');
 // const { validateCreateUser, validateLogin } = require('./middlewares/validate');
 // const auth = require('./middlewares/auth');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 const createErrors = require('./middlewares/errors');
 const routes = require('./routes/index');
 
@@ -19,7 +20,11 @@ app.use(bodyParser.json());
 
 // app.use(auth);
 
+app.use(requestLogger);
+
 app.use(routes);
+
+app.use(errorLogger);
 
 app.use(errors());
 
